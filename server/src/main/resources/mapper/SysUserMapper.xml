@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hy.usercenter.mapper.SysUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.hy.usercenter.model.domain.SysUser">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+            <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
+            <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="TINYINT"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="userRole" column="user_role" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+            <result property="userStatus" column="user_status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_name,user_account,
+        user_password,avatar_url,gender,
+        phone,email,user_role,
+        create_time,update_time,is_deleted,
+        user_status
+    </sql>
+
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into user_center.sys_user(user_name, user_account, user_password, avatar_url, gender, phone, email,
+        user_role, create_time, update_time, is_deleted, user_status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userName}, #{entity.userAccount}, #{entity.userPassword}, #{entity.avatarUrl}, #{entity.gender},
+            #{entity.phone}, #{entity.email}, #{entity.userRole}, #{entity.createTime}, #{entity.updateTime},
+            #{entity.isDeleted}, #{entity.userStatus})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into user_center.sys_user(user_name, user_account, user_password, avatar_url, gender, phone, email,
+        user_role, create_time, update_time, is_deleted, user_status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userName}, #{entity.userAccount}, #{entity.userPassword}, #{entity.avatarUrl}, #{entity.gender},
+            #{entity.phone}, #{entity.email}, #{entity.userRole}, #{entity.createTime}, #{entity.updateTime},
+            #{entity.isDeleted}, #{entity.userStatus})
+        </foreach>
+        on duplicate key update
+        user_name = values(user_name) , user_account = values(user_account) , user_password = values(user_password) ,
+        avatar_url = values(avatar_url) , gender = values(gender) , phone = values(phone) , email = values(email) ,
+        user_role = values(user_role) , create_time = values(create_time) , update_time = values(update_time) ,
+        is_deleted = values(is_deleted) , user_status = values(user_status)
+    </insert>
+</mapper>

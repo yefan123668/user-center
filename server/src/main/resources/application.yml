@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: user-center
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_center
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+server:
+  port: 8080
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
