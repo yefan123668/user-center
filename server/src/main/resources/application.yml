@@ -11,9 +11,13 @@ spring:
     port: 6379
 server:
   port: 8080
+  servlet:
+    # 指定接口全局api
+    context-path: /api
 mybatis-plus:
   global-config:
     db-config:
       id-type: auto
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
