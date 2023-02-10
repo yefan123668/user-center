@@ -4,6 +4,7 @@ import com.hy.usercenter.model.domain.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author a
@@ -21,6 +22,14 @@ public interface SysUserService extends IService<SysUser> {
      */
     Long userRegister(String userAccount, String userPassword, String checkPassword);
 
-    SysUser doLogin(String userAccount, String userPassword, HttpServletRequest request);
+    SysUser userLogin(String userAccount, String userPassword, HttpServletRequest request);
+
+    /**
+     * 用户列表查询，并脱敏
+     *
+     * @param userAccount
+     * @return
+     */
+    List<SysUser> userList(String userAccount);
 
 }

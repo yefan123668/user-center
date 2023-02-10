@@ -107,11 +107,11 @@ class SysUserServiceTest {
         String userAccount = "dogfeng";
         // 校验密码不匹配
         String userPassword = "12345679000";
-        SysUser user = sysUserService.doLogin(userAccount, userPassword, request);
+        SysUser user = sysUserService.userLogin(userAccount, userPassword, request);
         Assertions.assertNull(user);
         // 登录成功
         userPassword = "12345679";
-        user = sysUserService.doLogin(userAccount, userPassword, request);
+        user = sysUserService.userLogin(userAccount, userPassword, request);
         Assertions.assertNotNull(user);
         // 查看是否脱敏处理
         log.info(user.toString());

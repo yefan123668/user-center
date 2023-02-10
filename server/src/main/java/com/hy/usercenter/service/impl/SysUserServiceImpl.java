@@ -15,6 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.List;
+
+import static com.hy.usercenter.constants.UserConstant.SALT;
+import static com.hy.usercenter.constants.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author minsf
@@ -24,9 +28,6 @@ import java.security.MessageDigest;
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     implements SysUserService{
-
-    //加密盐-俗称搅屎棍
-    public static final String SALT = "sjdk:&^%";
 
     @Override
     public Long userRegister(String userAccount, String userPassword, String checkPassword)
@@ -77,7 +78,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public SysUser doLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    public SysUser userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 1、校验用户登录信息是否合法
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             // todo 后续进行优化，先返回null
@@ -108,15 +109,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         // 3.用户信息脱敏，隐藏敏感信息，防止数据库中的字段泄露
         String maskPhoneNumber = UserUtils.maskPhoneNumber(user.getPhone());
-        String maskEmail = UserUtils.maskEmail(user.getEmail());
         user.setPhone(maskPhoneNumber);
-        user.setEmail(maskEmail);
+        user.setUserPassword("");
+        user.setIsDeleted(null);
+
 
         HttpSession session = request.getSession();
-        session.setAttribute(userAccount, user);
-        // 60分钟
+        session.setAttribute(USER_LOGIN_STATE, user);
+        // 30分钟
         session.setMaxInactiveInterval(30 * 60);
         return user;
+    }
+
+    @Override
+    public List<SysUser> userList(String userAccount) {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.like(SysUser::getUserAccount, userAccount);
+        List<SysUser> list = this.list(queryWrapper);
+
+        list.forEach(item->{
+            item.setUserPassword(null);
+        });
+        return list;
     }
 
 }
