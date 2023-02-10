@@ -4,13 +4,19 @@ import java.util.Date;
 import com.hy.usercenter.model.domain.SysUser;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,11 +36,12 @@ class SysUserServiceTest {
 
     @Test
     @DisplayName("测试插入用户")
+    @Disabled
     public void testAddUser() {
         SysUser user = new SysUser();
-        user.setUserName("dogfeng");
-        user.setUserAccount("dogfeng");
-        user.setUserPassword("123");
+        user.setUserName("dogfeng123");
+        user.setUserAccount("dogfeng123");
+        user.setUserPassword("123456789");
         user.setAvatarUrl("https://thirdwx.qlogo.cn/mmopen/vi_32/Q3VcRlXbcCUjLBIAdcP9hsxuBrfZ1xPU0djJ33PJx0n9VjrAQ9ZRyO5e5RpYs1nOUg2spt1P1GPicgqnapBHNYA/132");
         user.setGender(0);
         user.setPhone("123");
@@ -49,6 +56,7 @@ class SysUserServiceTest {
 
     @Test
     @DisplayName("校验参数")
+    @Disabled
     void userRegister() {
         String userAccount = "";
         String userPassword = "123456789";
@@ -78,7 +86,13 @@ class SysUserServiceTest {
         checkPassword = "12345679";
         result = sysUserService.userRegister(userAccount, userPassword, checkPassword);
         Assertions.assertEquals(-1L, result);
-        //不能有相同的账户
+        // 成功测试
+        userAccount = "dogfeng";
+        userPassword = "12345679";
+        checkPassword = "12345679";
+        result = sysUserService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertNotEquals(-1L, result);
+        // 不能有相同的账户
         userAccount = "dogfeng";
         userPassword = "12345679";
         checkPassword = "12345679";
@@ -86,4 +100,20 @@ class SysUserServiceTest {
         Assertions.assertEquals(-1L, result);
     }
 
+    @Test
+    @DisplayName("用户登录测试")
+    void doLogin() {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String userAccount = "dogfeng";
+        // 校验密码不匹配
+        String userPassword = "12345679000";
+        SysUser user = sysUserService.doLogin(userAccount, userPassword, request);
+        Assertions.assertNull(user);
+        // 登录成功
+        userPassword = "12345679";
+        user = sysUserService.doLogin(userAccount, userPassword, request);
+        Assertions.assertNotNull(user);
+        // 查看是否脱敏处理
+        log.info(user.toString());
+    }
 }

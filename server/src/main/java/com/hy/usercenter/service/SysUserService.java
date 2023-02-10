@@ -3,6 +3,8 @@ package com.hy.usercenter.service;
 import com.hy.usercenter.model.domain.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
 * @author a
 * @description 针对表【sys_user(用户表)】的数据库操作Service
@@ -18,5 +20,7 @@ public interface SysUserService extends IService<SysUser> {
      * @return 新用户ID
      */
     Long userRegister(String userAccount, String userPassword, String checkPassword);
+
+    SysUser doLogin(String userAccount, String userPassword, HttpServletRequest request);
 
 }
