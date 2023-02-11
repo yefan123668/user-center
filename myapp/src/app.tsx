@@ -3,7 +3,7 @@ import RightContent from '@/components/RightContent';
 import {BookOutlined, LinkOutlined} from '@ant-design/icons';
 import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import {PageLoading, SettingDrawer} from '@ant-design/pro-components';
-import type {RunTimeLayoutConfig} from 'umi';
+import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
 import {history, Link} from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
@@ -19,6 +19,12 @@ export const initialStateConfig = {
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
+export const request: RequestConfig = {
+  prefix: '/api',
+  timeout: 30000
+};
+
+
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
@@ -51,6 +57,7 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
+  // @ts-ignore
   return {
     rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
@@ -81,7 +88,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
-    childrenRender: (children, props) => {
+    childrenRender: (children: any, props: { location: { pathname: string | string[]; }; }) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
         <>

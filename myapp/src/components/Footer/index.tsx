@@ -5,8 +5,8 @@ import {useIntl} from 'umi';
 const Footer: React.FC = () => {
   const intl = useIntl();
   const defaultMessage = intl.formatMessage({
-    id: 'app.copyright.produced',
-    defaultMessage: '蚂蚁集团体验技术部出品',
+    id: 'app.copyright.produced123',
+    defaultMessage: '晓枫出品',
   });
 
   const currentYear = new Date().getFullYear();
@@ -16,21 +16,16 @@ const Footer: React.FC = () => {
       copyright={`${currentYear} ${defaultMessage}`}
       links={[
         {
-          key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
-          href: 'https://pro.ant.design',
+          key: 'usercenter',
+          title: '用户中心',
+          href: 'http://minsf.top',
           blankTarget: true,
         },
         {
           key: 'github',
-          title: <GithubOutlined/>,
-          href: 'https://github.com/ant-design/ant-design-pro',
-          blankTarget: true,
-        },
-        {
-          key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
+          //对象必须要有一个根标签套起来
+          title: <><GithubOutlined/> 晓枫 Github </>,
+          href: 'https://gitee.com/min_shangfeng/user-center-pro',
           blankTarget: true,
         },
       ]}
