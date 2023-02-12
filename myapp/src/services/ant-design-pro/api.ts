@@ -4,9 +4,15 @@ import {request} from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<{
-    data: API.CurrentUser;
-  }>('/currentUser', {
+  return request< API.CurrentUser>('/user/current', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** searchUsers查询用户*/
+export async function searchUsers(options?: { [key: string]: any }) {
+  return request< API.CurrentUser>('/user/list', {
     method: 'GET',
     ...(options || {}),
   });

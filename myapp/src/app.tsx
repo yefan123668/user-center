@@ -37,8 +37,7 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
-      return msg.data;
+      return  await queryCurrentUser();
     } catch (error) {
       if (!writeList.includes(history.location.pathname)) {
         //获取用户信息发生异常就跳转到登录页
@@ -64,12 +63,11 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
-  // @ts-ignore
   return {
     rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.username,
     },
     footerRender: () => <Footer/>,
     onPageChange: () => {

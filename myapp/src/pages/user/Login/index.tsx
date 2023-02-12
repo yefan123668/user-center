@@ -6,6 +6,7 @@ import {LockOutlined, MobileOutlined, UserOutlined,} from '@ant-design/icons';
 import {LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText,} from '@ant-design/pro-components';
 import {Alert, message, Tabs} from 'antd';
 import React, {useState} from 'react';
+// @ts-ignore
 import {FormattedMessage, history, Link, SelectLang, useIntl, useModel} from 'umi';
 import styles from './index.less';
 
@@ -199,7 +200,7 @@ const Login: React.FC = () => {
                   id: 'pages.login.captcha.placeholder',
                   defaultMessage: '请输入验证码',
                 })}
-                captchaTextRender={(timing, count) => {
+                captchaTextRender={(timing: any, count: any) => {
                   if (timing) {
                     return `${count} ${intl.formatMessage({
                       id: 'pages.getCaptchaSecondText',
@@ -252,7 +253,7 @@ const Login: React.FC = () => {
                 float: 'right',
               }}
             >
-            {/*   <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>*/}
+              {/*   <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>*/}
               忘记密码请联系晓枫
             </a>
           </div>
