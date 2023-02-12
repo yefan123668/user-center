@@ -128,6 +128,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public SysUser maskUser(SysUser user) {
+        if (user == null) {
+            return null;
+        }
         // 3.用户信息脱敏，隐藏敏感信息，防止数据库中的字段泄露
         String maskPhoneNumber = UserUtils.maskPhoneNumber(user.getPhone());
         user.setPhone(maskPhoneNumber);
