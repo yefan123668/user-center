@@ -10,6 +10,10 @@ import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
+const registerPath = '/user/register';
+//通过白名单判断
+const writeList = [registerPath, loginPath];
+
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -36,12 +40,15 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser();
       return msg.data;
     } catch (error) {
-      history.push(loginPath);
+      if (!writeList.includes(history.location.pathname)) {
+        //获取用户信息发生异常就跳转到登录页
+        history.push(loginPath);
+      }
     }
     return undefined;
   };
   // 如果不是登录页面，执行
-  if (history.location.pathname !== loginPath) {
+  if (!writeList.includes(history.location.pathname)) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -67,8 +74,13 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     footerRender: () => <Footer/>,
     onPageChange: () => {
       const {location} = history;
+
+      if (writeList.includes(location.pathname)) {
+        // location.pathname拿到uri
+        return;
+      }
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (!initialState?.currentUser) {
         history.push(loginPath);
       }
     },
