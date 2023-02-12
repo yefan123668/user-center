@@ -1,5 +1,7 @@
 package com.hy.usercenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hy.usercenter.model.domain.SysUser;
 import com.hy.usercenter.service.SysUserService;
 import java.util.Collections;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+import static com.hy.usercenter.constants.UserConstant.ADMIN;
 import static com.hy.usercenter.constants.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -71,12 +74,9 @@ public class UserController {
     @GetMapping("list")
     public List<SysUser> userList(String userAccount, HttpServletRequest request) {
         // 需要对用户进行鉴权 user_role 0 普通用户， 1 管理员
-        HttpSession session = request.getSession();
-        SysUser user = (SysUser)session.getAttribute(USER_LOGIN_STATE);
-        if (user == null || user.getUserRole().equals(0)) {
+        if (Boolean.FALSE.equals(isAdmin(request))) {
             return Collections.emptyList();
         }
-
         return sysUserService.userList(userAccount);
     }
 
@@ -88,11 +88,37 @@ public class UserController {
      */
     @PostMapping("delete")
     public Boolean removeUser(@RequestBody Long id, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        SysUser user = (SysUser)session.getAttribute(USER_LOGIN_STATE);
-        if (user == null || user.getUserRole().equals(0)) {
-            return Boolean.FALSE;
+        if (Boolean.FALSE.equals(isAdmin(request))) {
+            return false;
         }
         return sysUserService.removeById(id);
+    }
+
+    private Boolean isAdmin(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser)session.getAttribute(USER_LOGIN_STATE);
+        if (user == null || !user.getUserRole().equals(ADMIN)) {
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
+    }
+
+    /**
+     * 获取当前用户的登录态
+     *
+     * @return 脱敏用户信息
+     */
+    @GetMapping("current")
+    public SysUser getCurrentUser(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute(USER_LOGIN_STATE);
+
+        if (user == null) {
+            return null;
+        }
+        //如果用户的信息更新频繁，应该拿去数据库中的用户信息，而不是缓存中的
+        Long userId = user.getId();
+        SysUser sysUser = sysUserService.getById(userId);
+        return sysUserService.maskUser(sysUser);
     }
 }

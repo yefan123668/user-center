@@ -1,5 +1,4 @@
 package com.hy.usercenter.service;
-import java.util.Date;
 
 import com.hy.usercenter.model.domain.SysUser;
 import lombok.extern.java.Log;
@@ -12,13 +11,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest
 @Log
@@ -47,7 +44,7 @@ class SysUserServiceTest {
         user.setPhone("123");
         user.setEmail("935524011@qq.com");
         user.setUserRole(0);
-        user.setUserStatus("1");
+        user.setUserStatus(0);
 
         boolean result = sysUserService.save(user);
         log.info("插入用户id："+user.getId());

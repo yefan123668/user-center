@@ -14,8 +14,8 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.List;
+import java.util.Optional;
 
 import static com.hy.usercenter.constants.UserConstant.SALT;
 import static com.hy.usercenter.constants.UserConstant.USER_LOGIN_STATE;
@@ -102,17 +102,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes(StandardCharsets.UTF_8));
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(SysUser::getUserAccount, userAccount);
-        SysUser user = this.getOne(lambdaQueryWrapper);
+        SysUser user = Optional.ofNullable(this.getOne(lambdaQueryWrapper)).orElse(new SysUser());
         if (! encryptPassword.equals(user.getUserPassword())) {
             return null;
         }
 
-        // 3.用户信息脱敏，隐藏敏感信息，防止数据库中的字段泄露
-        String maskPhoneNumber = UserUtils.maskPhoneNumber(user.getPhone());
-        user.setPhone(maskPhoneNumber);
-        user.setUserPassword("");
-        user.setIsDeleted(null);
-
+        user = maskUser(user);
 
         HttpSession session = request.getSession();
         session.setAttribute(USER_LOGIN_STATE, user);
@@ -127,10 +122,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         queryWrapper.like(SysUser::getUserAccount, userAccount);
         List<SysUser> list = this.list(queryWrapper);
 
-        list.forEach(item->{
-            item.setUserPassword(null);
-        });
+        list.forEach(this::maskUser);
         return list;
+    }
+
+    @Override
+    public SysUser maskUser(SysUser user) {
+        // 3.用户信息脱敏，隐藏敏感信息，防止数据库中的字段泄露
+        String maskPhoneNumber = UserUtils.maskPhoneNumber(user.getPhone());
+        user.setPhone(maskPhoneNumber);
+        user.setUserPassword("");
+        user.setIsDeleted(null);
+        return user;
     }
 
 }

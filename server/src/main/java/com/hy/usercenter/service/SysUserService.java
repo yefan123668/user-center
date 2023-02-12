@@ -32,4 +32,11 @@ public interface SysUserService extends IService<SysUser> {
      */
     List<SysUser> userList(String userAccount);
 
+    /**
+     * 用户脱敏
+     *
+     * @param user 原始用户info
+     * @return 脱敏user
+     */
+    SysUser maskUser(SysUser user);
 }
