@@ -1,10 +1,11 @@
 package com.hy.usercenter.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hy.usercenter.model.domain.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hy.usercenter.model.domain.request.UserListDto;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
 * @author a
@@ -27,10 +28,10 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 用户列表查询，并脱敏
      *
-     * @param userAccount
+     * @param userParam
      * @return
      */
-    List<SysUser> userList(String userAccount);
+    Page<SysUser> userList(UserListDto userParam);
 
     /**
      * 用户脱敏

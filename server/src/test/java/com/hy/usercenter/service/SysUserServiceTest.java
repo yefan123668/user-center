@@ -1,5 +1,6 @@
 package com.hy.usercenter.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hy.usercenter.model.domain.SysUser;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +28,13 @@ class SysUserServiceTest {
     @Test
     @DisplayName("测试查询库中的所有用户")
     public void testSelectAll() {
-        List<SysUser> list = sysUserService.list();
+        int current = 1;
+        int pageSize = 5;
+        Page<SysUser> page = new Page<>();
+        page.setCurrent(current);
+        page.setSize(pageSize);
+        List<SysUser> list = sysUserService.page(page).getRecords();
+        log.info(""+list);
         assertNotEquals(0, list.size());
     }
 

@@ -2,8 +2,10 @@ package com.hy.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hy.usercenter.model.domain.SysUser;
+import com.hy.usercenter.model.domain.request.UserListDto;
 import com.hy.usercenter.service.SysUserService;
 import com.hy.usercenter.mapper.SysUserMapper;
 import com.hy.usercenter.utils.UserUtils;
@@ -14,7 +16,6 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
 
 import static com.hy.usercenter.constants.UserConstant.SALT;
@@ -69,6 +70,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         SysUser user = new SysUser();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
+        user.setUserName("默认用户名，请修改");
         boolean save = this.save(user);
 
         if (!save) {
@@ -117,13 +119,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public List<SysUser> userList(String userAccount) {
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper();
-        queryWrapper.like(SysUser::getUserAccount, userAccount);
-        List<SysUser> list = this.list(queryWrapper);
+    public Page<SysUser> userList(UserListDto userParam) {
+        Page<SysUser> page = new Page<>();
+        page.setSize(Optional.ofNullable(userParam.getPageSize()).orElse(5));
+        page.setCurrent(Optional.ofNullable(userParam.getCurrent()).orElse(1));
 
-        list.forEach(this::maskUser);
-        return list;
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(userParam.getUserAccount()!=null, SysUser::getUserAccount, userParam.getUserAccount());
+        queryWrapper.like(userParam.getPhone()!=null,SysUser::getPhone, userParam.getPhone());
+        queryWrapper.like(userParam.getUserName()!=null,SysUser::getUserName, userParam.getUserName());
+        queryWrapper.like(userParam.getEmail()!=null,SysUser::getEmail, userParam.getEmail());
+        queryWrapper.like(userParam.getGender()!=null,SysUser::getGender, userParam.getGender());
+        queryWrapper.like(userParam.getUserStatus()!=null,SysUser::getUserStatus, userParam.getUserStatus());
+        queryWrapper.like(userParam.getUserRole()!=null,SysUser::getUserRole, userParam.getUserRole());
+
+        queryWrapper.ge(userParam.getStartTime()!=null,SysUser::getCreateTime,userParam.getStartTime());
+        queryWrapper.le(userParam.getEndTime()!=null,SysUser::getCreateTime,userParam.getEndTime());
+
+        Page<SysUser> userPage = this.page(page, queryWrapper);
+
+        userPage.getRecords().forEach(this::maskUser);
+        return userPage;
     }
 
     @Override

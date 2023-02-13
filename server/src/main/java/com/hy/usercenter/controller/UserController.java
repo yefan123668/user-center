@@ -2,6 +2,7 @@ package com.hy.usercenter.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hy.usercenter.model.domain.SysUser;
 import com.hy.usercenter.service.SysUserService;
 import java.util.Collections;
@@ -71,13 +72,21 @@ public class UserController {
      *
      * @return 用户列表
      */
-    @GetMapping("list")
-    public List<SysUser> userList(String userAccount, HttpServletRequest request) {
+    @PostMapping("list")
+    public Page<SysUser> userList(@RequestBody UserListDto paramsUser, HttpServletRequest request) {
         // 需要对用户进行鉴权 user_role 0 普通用户， 1 管理员
         if (Boolean.FALSE.equals(isAdmin(request))) {
-            return Collections.emptyList();
+            // 非管理员只能查看自己的信息
+            SysUser user = (SysUser) request.getSession().getAttribute(USER_LOGIN_STATE);
+            List<SysUser> sysUsers = Collections.singletonList(user);
+            Page<SysUser> page= new Page<>();
+            page.setRecords(sysUsers);
+            return page;
         }
-        return sysUserService.userList(userAccount);
+        if (paramsUser.getUserAccount() == null) {
+            paramsUser.setUserAccount("");
+        }
+        return sysUserService.userList(paramsUser);
     }
 
     /**
@@ -120,5 +129,15 @@ public class UserController {
         Long userId = user.getId();
         SysUser sysUser = sysUserService.getById(userId);
         return sysUserService.maskUser(sysUser);
+    }
+
+    /**
+     * 登出
+     *
+     */
+    @PostMapping("outLogin")
+    public void outLogin(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.removeAttribute(USER_LOGIN_STATE);
     }
 }
