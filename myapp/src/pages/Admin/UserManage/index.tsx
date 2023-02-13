@@ -12,7 +12,7 @@ const columns: ProColumns<API.CurrentUser>[] = [
   },
   {
     title: '用户名',
-    dataIndex: 'username',
+    dataIndex: 'userName',
     copyable: true,
   },
   {
@@ -25,13 +25,18 @@ const columns: ProColumns<API.CurrentUser>[] = [
     dataIndex: 'avatarUrl',
     render: (_, record) => (
       <div>
-        <Image src={record.avatarUrl} width={100} />
+        <Image src={record.avatarUrl} width={100} height={100}/>
       </div>
     ),
   },
   {
     title: '性别',
     dataIndex: 'gender',
+    valueType: 'select',
+    valueEnum: {
+      0: {text: '男'},
+      1: {text: '女'}
+    }
   },
   {
     title: '电话',
@@ -46,10 +51,11 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '状态',
     dataIndex: 'userStatus',
-  },
-  {
-    title: '星球编号',
-    dataIndex: 'planetCode',
+    valueType: 'select',
+    valueEnum: {
+      0: {text: '启用', status: 'Processing'},
+      1: {text: '停用', status: 'Error'}
+    },
   },
   {
     title: '角色',

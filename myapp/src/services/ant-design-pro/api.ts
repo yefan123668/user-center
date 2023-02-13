@@ -12,7 +12,7 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 /** searchUsers查询用户*/
 export async function searchUsers(options?: { [key: string]: any }) {
-  return request< API.CurrentUser>('/user/list', {
+  return request< API.CurrentUser[]>('/user/list', {
     method: 'GET',
     ...(options || {}),
   });
