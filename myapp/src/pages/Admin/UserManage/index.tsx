@@ -1,7 +1,7 @@
-import { useRef } from 'react';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import ProTable, { TableDropdown } from '@ant-design/pro-table';
-import { searchUsers } from "@/services/ant-design-pro/api";
+import {useRef} from 'react';
+import type {ActionType, ProColumns} from '@ant-design/pro-table';
+import ProTable, {TableDropdown} from '@ant-design/pro-table';
+import {searchUsers} from "@/services/ant-design-pro/api";
 import {Image} from "antd";
 
 const columns: ProColumns<API.CurrentUser>[] = [
@@ -23,6 +23,7 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '头像',
     dataIndex: 'avatarUrl',
+    search: false,
     render: (_, record) => (
       <div>
         <Image src={record.avatarUrl} width={100} height={100}/>
@@ -72,7 +73,23 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    valueType: 'dateTime',
+    copyable: true,
+    valueType: 'dateRange',
+    hideInTable: true,
+    search: {
+      transform: (value) => {
+        return {
+          startTime: value[0],
+          endTime: value[1],
+        };
+      },
+    }
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    valueType: 'date',
+    search: false,
   },
   {
     title: '操作',
@@ -103,24 +120,32 @@ const columns: ProColumns<API.CurrentUser>[] = [
 
 export default () => {
   const actionRef = useRef<ActionType>();
+
   return (
+
     <ProTable<API.CurrentUser>
+
       columns={columns}
       actionRef={actionRef}
       cardBordered
-      request={async (params = {}, sort, filter) => {
+      request={async (
+        params,
+        sort,
+        filter) => {
         console.log(sort, filter);
-        const userList = await searchUsers();
+
+        const userList = await searchUsers(params);
         return {
-          data: userList
+          data: userList.records,
+          total: userList.total
         }
       }}
       editable={{
         type: 'multiple',
       }}
       columnsState={{
-        persistenceKey: 'pro-table-singe-demos',
-        persistenceType: 'localStorage',
+        persistenceKey:'storeManagementSeeting', //持久化列的 key，用于判断是否是同一个 table,会存在缓存里去
+        persistenceType:'localStorage' //持久化列的类类型， localStorage 设置在关闭浏览器后也是存在的，sessionStorage 关闭浏览器后会丢失
       }}
       rowKey="id"
       search={{

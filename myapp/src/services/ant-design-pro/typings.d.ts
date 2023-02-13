@@ -12,8 +12,27 @@ declare namespace API {
     email: string;
     userStatus: number;
     userRole: number;
-    planetCode: string;
     createTime: Date;
+  };
+
+  type Page<T>= {
+    current: number;
+    size: number;
+    total: number;
+    records: T[];
+  };
+
+  type ListUser = {
+    id: number;
+    userName: string;
+    userAccount: string;
+    gender:number;
+    phone: string;
+    email: string;
+    userStatus: number;
+    userRole: number;
+    startTime: Date;
+    endTime: Date;
   };
 
   type LoginResult = {

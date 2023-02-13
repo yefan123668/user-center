@@ -26,7 +26,7 @@ export default [
   },
   {
     path: '/admin',
-    name: 'admin',
+    name: '管理页面',
     icon: 'crown',
     access: 'canAdmin',
     component: './Admin',
@@ -44,10 +44,10 @@ export default [
     ],
   },
   {
-    name: 'list.table-list',
+    name: '人员管理',
     icon: 'table',
     path: '/list',
-    component: './TableList',
+    component: './Admin/UserManage',
   },
   {
     path: '/',

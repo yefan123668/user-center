@@ -1,26 +1,29 @@
 // @ts-ignore
 /* eslint-disable */
+import { ParamsType } from '@ant-design/pro-components';
 import {request} from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request< API.CurrentUser>('/user/current', {
+  return request<API.CurrentUser>('/user/current', {
     method: 'GET',
     ...(options || {}),
   });
 }
 
 /** searchUsers查询用户*/
-export async function searchUsers(options?: { [key: string]: any }) {
-  return request< API.CurrentUser[]>('/user/list', {
-    method: 'GET',
+export async function searchUsers(body: ParamsType & { pageSize?: number | undefined; current?: number | undefined; keyword?: string | undefined; },
+                                  options?: { [key: string]: any }) {
+  return request< API.Page<API.CurrentUser>>('/user/list', {
+    method: 'POST',
     ...(options || {}),
+    data: body,
   });
 }
 
-/** 退出登录接口 POST /api/login/outLogin */
+/** 退出登录接口 POST /api/user/outLogin */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
+  return request<Record<string, any>>('/user/outLogin', {
     method: 'POST',
     ...(options || {}),
   });
