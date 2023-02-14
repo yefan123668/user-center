@@ -15,6 +15,13 @@ declare namespace API {
     createTime: Date;
   };
 
+  type Common<T> = {
+    code: number;
+    msg: string;
+    data: T;
+    description?: string;
+  };
+
   type Page<T>= {
     current: number;
     size: number;

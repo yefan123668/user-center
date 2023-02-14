@@ -7,6 +7,7 @@ import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
 import {history, Link} from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
+import {message} from "antd";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -37,8 +38,17 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      return  await queryCurrentUser();
+      const data = queryCurrentUser().then(resp=>{
+        if (resp.code !== 200) {
+          throw Error(resp.description)
+        }
+        return resp.data
+      });
+      console.log(data)
+      return  await data;
     } catch (error) {
+      // @ts-ignore
+      message.error(error.message);
       if (!writeList.includes(history.location.pathname)) {
         //获取用户信息发生异常就跳转到登录页
         history.push(loginPath);
@@ -49,6 +59,7 @@ export async function getInitialState(): Promise<{
   // 如果不是登录页面，执行
   if (!writeList.includes(history.location.pathname)) {
     const currentUser = await fetchUserInfo();
+    console.log("打印++++++",currentUser)
     return {
       fetchUserInfo,
       currentUser,

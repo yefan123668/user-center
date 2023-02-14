@@ -5,7 +5,7 @@ import {request} from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.CurrentUser>('/user/current', {
+  return request<API.Common<API.CurrentUser>>('/user/current', {
     method: 'GET',
     ...(options || {}),
   });
@@ -14,7 +14,7 @@ export async function currentUser(options?: { [key: string]: any }) {
 /** searchUsers查询用户*/
 export async function searchUsers(body: ParamsType & { pageSize?: number | undefined; current?: number | undefined; keyword?: string | undefined; },
                                   options?: { [key: string]: any }) {
-  return request< API.Page<API.CurrentUser>>('/user/list', {
+  return request<API.Common<API.Page<API.CurrentUser>>>('/user/list', {
     method: 'POST',
     ...(options || {}),
     data: body,
@@ -31,7 +31,7 @@ export async function outLogin(options?: { [key: string]: any }) {
 
 /** 登录接口 POST /api/user/login */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/user/login', {
+  return request<API.Common<API.LoginResult>>('/user/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 
 /** 注册接口 POST /api/user/register */
 export async function register(body: API.RegisterParams, options?: { [key: string]: any }) {
-  return request<API.RegisterResult>('/user/register', {
+  return request<API.Common<API.RegisterResult>>('/user/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

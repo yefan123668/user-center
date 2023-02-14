@@ -24,6 +24,7 @@ const loginOut = async () => {
   if (window.location.pathname !== '/user/login' && !redirect) {
     history.replace({
       pathname: '/user/login',
+      // 后面拼接重定向参数
       search: stringify({
         redirect: pathname + search,
       }),
@@ -38,6 +39,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     (event: MenuInfo) => {
       const { key } = event;
       if (key === 'logout') {
+        //把它们设置成undefined
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;

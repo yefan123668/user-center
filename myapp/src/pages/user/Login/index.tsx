@@ -43,7 +43,12 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const user = await login({...values, type});
+      const user = await login({...values, type}).then(resp=>{
+        if (resp.code !== 2000) {
+          throw Error(resp.description)
+        }
+        return resp.data
+      });
       if (user) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -62,11 +67,8 @@ const Login: React.FC = () => {
       // 如果失败去设置用户错误信息
       setUserLoginState(user);
     } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
-      });
-      message.error(defaultLoginFailureMessage);
+      // @ts-ignore
+      message.error(error.message);
     }
   };
   const {status, type: loginType} = userLoginState;

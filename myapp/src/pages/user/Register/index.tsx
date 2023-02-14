@@ -40,8 +40,8 @@ const Register: React.FC = () => {
     }
     try {
       // 注册
-      const id = await register({...values});
-      if (id > 0) {
+      const reponse = await register({...values});
+      if (reponse.code === 2000) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '注册成功！',
@@ -57,13 +57,14 @@ const Register: React.FC = () => {
         })
         return;
       } else {
-        throw Error(`register error id=${id}`)
+        throw Error(`${reponse.description}，状态码：${reponse.code}`)
       }
 
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
-        defaultMessage: '注册失败，请重试！',
+        // @ts-ignore
+        defaultMessage: error.message,
       });
       message.error(defaultLoginFailureMessage);
     }

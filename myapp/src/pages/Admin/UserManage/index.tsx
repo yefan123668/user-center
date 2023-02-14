@@ -78,10 +78,13 @@ const columns: ProColumns<API.CurrentUser>[] = [
     hideInTable: true,
     search: {
       transform: (value) => {
-        return {
-          startTime: value[0],
-          endTime: value[1],
-        };
+        if (value) { // 对 value 进行判断，如果为 undefined 则返回一个空对象
+          return {
+            startTime: value[0],
+            endTime: value[1],
+          };
+        }
+        return {};
       },
     }
   },
@@ -136,8 +139,8 @@ export default () => {
 
         const userList = await searchUsers(params);
         return {
-          data: userList.records,
-          total: userList.total
+          data: userList.data.records,
+          total: userList.data.total
         }
       }}
       editable={{
