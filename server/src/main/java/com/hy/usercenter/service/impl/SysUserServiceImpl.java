@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hy.usercenter.common.ResultEnum;
+import com.hy.usercenter.exception.CommonException;
 import com.hy.usercenter.model.domain.SysUser;
 import com.hy.usercenter.model.domain.request.UserListDto;
 import com.hy.usercenter.service.SysUserService;
@@ -22,9 +24,11 @@ import static com.hy.usercenter.constants.UserConstant.SALT;
 import static com.hy.usercenter.constants.UserConstant.USER_LOGIN_STATE;
 
 /**
-* @author minsf
-* @description 用户服务实现类
-* @createDate 2023-02-08 11:36:05
+ * @description 用户服务实现类
+ *
+ * @author minsf
+ * @createDate 2023-02-08 11:36:05
+ *
 */
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
@@ -35,24 +39,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     {
         //1、校验(也可以在实体类校验，推荐在这里)
         if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword)) {
-            return -1L; //应该抛异常，todo 待优化
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "表单必填参数存在空值");
         }
         if (userAccount.length() < 4) {
-            return  -1L;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "账户长度小于4");
         }
         if (userPassword.length()<8 || checkPassword.length()<8) {
-            return -1L;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "密码长度小于8");
         }
 
         //账户不能有特殊字符，仅能包含字母、数字和下划线
         String pattern = "^[a-zA-Z0-9_]+$";
         boolean matches = userAccount.matches(pattern);
         if (!matches) {
-            return -1L;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "账户包含了特殊字符");
         }
 
         if (!userPassword.equals(checkPassword)) {
-            return  -1L;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "两次密码不匹配");
         }
 
         //用户账户不能重复,放到最后，防止造成性能的浪费
@@ -60,7 +64,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         lambdaQueryWrapper.eq(SysUser::getUserAccount, userAccount);
         long count = this.count(lambdaQueryWrapper);
         if (count > 0) {
-            return -1L;
+            throw new CommonException(ResultEnum.DATABASE_ERROR, "改用户已被注册");
         }
 
         //2、加密 JAVA包自带的加密工具
@@ -74,7 +78,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         boolean save = this.save(user);
 
         if (!save) {
-            return -1L;
+            throw new CommonException(ResultEnum.DATABASE_ERROR, "数据库异常，请联系管理员");
         }
         return user.getId();
     }
@@ -83,21 +87,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     public SysUser userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 1、校验用户登录信息是否合法
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            // todo 后续进行优化，先返回null
-            return null;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "表单必填参数存在空值");
         }
         if (userAccount.length() < 4) {
-            return  null;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "账户长度小于4");
         }
         if (userPassword.length() < 8) {
-            return null;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "密码长度小于8");
         }
 
         //账户不能有特殊字符，仅能包含字母、数字和下划线
         String pattern = "^[a-zA-Z0-9_]+$";
         boolean matches = userAccount.matches(pattern);
         if (!matches) {
-            return null;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "账户包含了特殊字符");
         }
 
         // 2. 校验密码是否输入正确，要和数据库中的密文密码去对比
@@ -106,7 +109,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         lambdaQueryWrapper.eq(SysUser::getUserAccount, userAccount);
         SysUser user = Optional.ofNullable(this.getOne(lambdaQueryWrapper)).orElse(new SysUser());
         if (! encryptPassword.equals(user.getUserPassword())) {
-            return null;
+            throw new CommonException(ResultEnum.NO_LOGIN, "密码错误!");
         }
 
         user = maskUser(user);
@@ -145,7 +148,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Override
     public SysUser maskUser(SysUser user) {
         if (user == null) {
-            return null;
+            throw new CommonException(ResultEnum.NO_LOGIN, "用户信息异常");
         }
         // 3.用户信息脱敏，隐藏敏感信息，防止数据库中的字段泄露
         String maskPhoneNumber = UserUtils.maskPhoneNumber(user.getPhone());

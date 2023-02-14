@@ -3,6 +3,10 @@ package com.hy.usercenter.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hy.usercenter.common.BaseResponse;
+import com.hy.usercenter.common.ResultEnum;
+import com.hy.usercenter.common.ResultUtils;
+import com.hy.usercenter.exception.CommonException;
 import com.hy.usercenter.model.domain.SysUser;
 import com.hy.usercenter.service.SysUserService;
 import java.util.Collections;
@@ -36,16 +40,16 @@ public class UserController {
      * @return 返回uid，后续优化
      */
     @PostMapping("register")
-    public Long doRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<Long> doRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
         /* controller只注重参数的校验，比较专一 */
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            // todo 返回结果后续优化
-            return -1L;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "表单必填参数存在空值");
         }
-        return sysUserService.userRegister(userAccount, userPassword, checkPassword);
+        Long register = sysUserService.userRegister(userAccount, userPassword, checkPassword);
+        return ResultUtils.success(register, ResultEnum.SUCCESS);
     }
 
     /**
@@ -56,15 +60,15 @@ public class UserController {
      * @return 返回用户脱敏的信息
      */
     @PostMapping("login")
-    public SysUser doLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<SysUser> doLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
 
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            // todo 后续优化
-            return null;
+            throw new CommonException(ResultEnum.PARAMS_ERROR, "表单必填参数存在空值");
         }
-        return sysUserService.userLogin(userAccount, userPassword, request);
+        SysUser user = sysUserService.userLogin(userAccount, userPassword, request);
+        return ResultUtils.success(user, ResultEnum.SUCCESS);
     }
 
     /**
@@ -73,7 +77,7 @@ public class UserController {
      * @return 用户列表
      */
     @PostMapping("list")
-    public Page<SysUser> userList(@RequestBody UserListDto paramsUser, HttpServletRequest request) {
+    public BaseResponse<Page<SysUser>> userList(@RequestBody UserListDto paramsUser, HttpServletRequest request) {
         // 需要对用户进行鉴权 user_role 0 普通用户， 1 管理员
         if (Boolean.FALSE.equals(isAdmin(request))) {
             // 非管理员只能查看自己的信息
@@ -81,12 +85,12 @@ public class UserController {
             List<SysUser> sysUsers = Collections.singletonList(user);
             Page<SysUser> page= new Page<>();
             page.setRecords(sysUsers);
-            return page;
+            return ResultUtils.success(page, ResultEnum.SUCCESS);
         }
         if (paramsUser.getUserAccount() == null) {
             paramsUser.setUserAccount("");
         }
-        return sysUserService.userList(paramsUser);
+        return ResultUtils.success(sysUserService.userList(paramsUser), ResultEnum.SUCCESS);
     }
 
     /**
@@ -96,11 +100,11 @@ public class UserController {
      * @return 是否成功
      */
     @PostMapping("delete")
-    public Boolean removeUser(@RequestBody Long id, HttpServletRequest request) {
+    public BaseResponse<Boolean> removeUser(@RequestBody Long id, HttpServletRequest request) {
         if (Boolean.FALSE.equals(isAdmin(request))) {
-            return false;
+            return ResultUtils.fail(ResultEnum.DATA_DELETE_FAIL_ERROR);
         }
-        return sysUserService.removeById(id);
+        return ResultUtils.success(sysUserService.removeById(id), ResultEnum.SUCCESS);
     }
 
     private Boolean isAdmin(HttpServletRequest request) {
@@ -118,17 +122,17 @@ public class UserController {
      * @return 脱敏用户信息
      */
     @GetMapping("current")
-    public SysUser getCurrentUser(HttpServletRequest request) {
+    public BaseResponse<SysUser> getCurrentUser(HttpServletRequest request) {
         HttpSession session = request.getSession();
         SysUser user = (SysUser) session.getAttribute(USER_LOGIN_STATE);
 
         if (user == null) {
-            return null;
+            throw new CommonException(ResultEnum.NO_LOGIN, "用户未登录");
         }
         //如果用户的信息更新频繁，应该拿去数据库中的用户信息，而不是缓存中的
         Long userId = user.getId();
         SysUser sysUser = sysUserService.getById(userId);
-        return sysUserService.maskUser(sysUser);
+        return ResultUtils.success(sysUserService.maskUser(sysUser));
     }
 
     /**
