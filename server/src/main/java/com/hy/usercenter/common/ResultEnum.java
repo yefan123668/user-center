@@ -12,7 +12,7 @@ public enum ResultEnum {
     PARAMS_ERROR(5000, "参数错误", ""),
     DATA_ERROR(5001, "数据异常", ""),
     NO_AUTHORITY(4001, "无权限",""),
-    NO_LOGIN(4003, "未登录",""),
+    NO_LOGIN(4003, "登录异常",""),
     DATABASE_ERROR(5005, "数据库异常", ""),
     SYSTEM_ERROR(50000, "系统异常", ""),
     DATA_DELETE_FAIL_ERROR(5006, "数据删除失败", "");
