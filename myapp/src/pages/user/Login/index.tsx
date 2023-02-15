@@ -254,6 +254,8 @@ const Login: React.FC = () => {
               style={{
                 float: 'right',
               }}
+              target={"_blank"}
+              href={XIAOFENG_LINK} rel="noreferrer"
             >
               {/*   <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>*/}
               忘记密码请联系晓枫

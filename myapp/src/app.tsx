@@ -13,7 +13,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 const registerPath = '/user/register';
 //通过白名单判断
-const writeList = [registerPath, loginPath];
+const writeList = [registerPath, loginPath, "/"];
 
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
@@ -37,21 +37,23 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
-    try {
-      const data = queryCurrentUser().then(resp=>{
-        if (resp.code !== 200) {
-          throw Error(resp.description)
+    if (!writeList.includes(history.location.pathname)) {
+      try {
+        const data = queryCurrentUser().then(resp => {
+          if (resp.code !== 200) {
+            throw Error(resp.description)
+          }
+          return resp.data
+        });
+        console.log(data)
+        return await data;
+      } catch (error) {
+        if (!writeList.includes(history.location.pathname)) {
+          // @ts-ignore
+          message.error(error.message);
+          //获取用户信息发生异常就跳转到登录页
+          history.push(loginPath);
         }
-        return resp.data
-      });
-      console.log(data)
-      return  await data;
-    } catch (error) {
-      // @ts-ignore
-      message.error(error.message);
-      if (!writeList.includes(history.location.pathname)) {
-        //获取用户信息发生异常就跳转到登录页
-        history.push(loginPath);
       }
     }
     return undefined;
