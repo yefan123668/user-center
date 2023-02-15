@@ -57,7 +57,7 @@ const Register: React.FC = () => {
         })
         return;
       } else {
-        throw Error(`${reponse.description}，状态码：${reponse.code}`)
+        throw Error(`${reponse.description}`)
       }
 
     } catch (error) {
