@@ -13,6 +13,7 @@ import com.hy.usercenter.mapper.SysUserMapper;
 import com.hy.usercenter.utils.UserUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import static com.hy.usercenter.constants.UserConstant.USER_LOGIN_STATE;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     implements SysUserService{
 
+    @Transactional
     @Override
     public Long userRegister(String userAccount, String userPassword, String checkPassword)
     {
@@ -64,7 +66,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         lambdaQueryWrapper.eq(SysUser::getUserAccount, userAccount);
         long count = this.count(lambdaQueryWrapper);
         if (count > 0) {
-            throw new CommonException(ResultEnum.DATABASE_ERROR, "改用户已被注册");
+            throw new CommonException(ResultEnum.DATABASE_ERROR, "该用户已被注册");
         }
 
         //2、加密 JAVA包自带的加密工具
