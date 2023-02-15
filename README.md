@@ -1,4 +1,4 @@
-项目已经部署：
+项目已经部署，立即前往首页=====>：**http://www.minsf.top**
 
 [前往首页]: http://www.minsf.top
 
@@ -59,9 +59,9 @@ $ cd myapp && npm install
 
 一般不会从0开始手写，这里直接复制Login组件，将文件夹名改为Register
 
-![image-20230211195340523](C:\Users\a\Desktop\md-Image\image-20230211195340523.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec9004f144a01007b83dd0.png)
 
-![image-20230211195631753](C:\Users\a\Desktop\md-Image\image-20230211195631753.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec9084f144a01007b954c5.png)
 
 根据需要修改html、css、js
 
@@ -71,11 +71,11 @@ $ cd myapp && npm install
 
 有时候，我们的页面并不需要经过登录认证，对于前端来说，需要进行特定的配置
 
-![image-20230211202001574](C:\Users\a\Desktop\md-Image\image-20230211202001574.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec9084f144a01007b954c5.png)
 
 这里逻辑是，如果不是登录页，就会请求后端当前用户的用户态，如果返回值不符合规则或出现异常会重定向到登录页
 
-![image-20230211202337073](C:\Users\a\Desktop\md-Image\image-20230211202337073.png)
+https://pic.imgdb.cn/item/63ec910ff144a01007ba9038.png
 
 onPageChange相当于ant design pro提供的生命周期狗子，当前端的页面发生改变时，会触发这里的逻辑，这里还是跳转到登录页
 
@@ -110,7 +110,7 @@ if (!writeList.includes(history.location.pathname)
 
 ###### 4.配置路由
 
-![image-20230211201224587](C:\Users\a\Desktop\md-Image\image-20230211201224587.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec914cf144a01007bb2628.png)
 
 在routers.ts文件中配置好注册页面的路由
 
@@ -139,11 +139,11 @@ export default Admin;
 
 这时我们需要register的组件：
 
-![image-20230212000608139](C:\Users\a\Desktop\md-Image\image-20230212000608139.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec916ff144a01007bb72b8.png)
 
 有时候找不到头绪，可以尝试看下源码，ts是它定义的类型，我们去js里查看
 
-![image-20230212000731880](C:\Users\a\Desktop\md-Image\image-20230212000731880.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec9193f144a01007bbbe07.png)
 
 我们可以把ant design pro封装的LoginForm组件改写为我们的注册组件，但是按钮是登录，我们需要改写为  “注册”，翻阅官方文档和百度都差不多时，部分简单看下源码（点进去搜索“登录”），最后发现了这个对象可以改按钮名字
 
@@ -171,15 +171,14 @@ export default Admin;
 
 当我们提交后，框架会将name和key放到一个对象里
 
-![image-20230212001428540](C:\Users\a\Desktop\md-Image\image-20230212001428540.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec91c8f144a01007bc43f5.png)
 
 在ts中定义一个变量，？表示这个属性可以不存在，不是必选的
 
 这个变量定义的目的，相当于给js的变量做一个约束，一个规范
 
 
-
-![image-20230212003440780](C:\Users\a\Desktop\md-Image\image-20230212003440780.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec91f6f144a01007bcb455.png)
 
 这个相当于  xxx?redirect=/aaa
 
@@ -200,7 +199,7 @@ push除了传一个字符串，也可以支持这种
 
 
 
-![image-20230212111256773](C:\Users\a\Desktop\md-Image\image-20230212111256773.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec923bf144a01007bd3a54.png)
 
 加一个p标签，段落有自动换行的效果
 
@@ -208,27 +207,22 @@ Link标签中的to一般用于跳转到站内某个页面
 
 href一般用于站外
 
-![image-20230212111956004](C:\Users\a\Desktop\md-Image\image-20230212111956004.png)
+
+https://pic.imgdb.cn/item/63ec9271f144a01007bd9f5e.png
 
 还是放到自动登录旁边，放一个分隔栏，垂直分割
 
-![image-20230212113937454](C:\Users\a\Desktop\md-Image\image-20230212113937454.png)
 
-做个组件进行分割
 
-![image-20230212122506760](C:\Users\a\Desktop\md-Image\image-20230212122506760.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec92baf144a01007be1f15.png)
 
-加个水印
+有需要还可以加个水印
 
 
 
-![image-20230212145255984](C:\Users\a\Desktop\md-Image\image-20230212145255984.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec92d9f144a01007be56b6.png)
 
 access.tsx是pro专门用来控制管理员权限的
-
-
-
-![image-20230212151147277](C:\Users\a\Desktop\md-Image\image-20230212151147277.png)
 
 
 
@@ -251,7 +245,6 @@ https://procomponents.ant.design/components
    - valueType申明这一列的类型
    - search用来定制该字段在表单上的查询，如果为false则关闭在表单上的查询
 
-![image-20230212173742622](C:\Users\a\Desktop\md-Image\image-20230212173742622.png)
 
 每行的值默认是以字符串的形式渲染的，通过rander函数可以改变
 
@@ -351,6 +344,6 @@ Ant Design Pro是一个后台管理系统=>Ant Design、Ant Design Procomponents
 
 ###### 8、效果展示
 
-![image-20230213164456076](C:\Users\a\Desktop\md-Image\image-20230213164456076.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec9386f144a01007bf79ae.png)
 
-![image-20230213164614740](C:\Users\a\Desktop\md-Image\image-20230213164614740.png)
+![输入图片说明](https://pic.imgdb.cn/item/63ec93a9f144a01007bfb984.png)
