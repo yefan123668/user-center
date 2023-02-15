@@ -1,4 +1,4 @@
-项目已经部署，立即前往首页=====>：**http://www.minsf.top**
+项目已经部署，立即前往首页=====：>**http://www.minsf.top**
 
 [前往首页]: http://www.minsf.top
 
